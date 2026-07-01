@@ -1,0 +1,69 @@
+Method: bc_flow
+Env:    hard
+Eval:   990.4 +/- 67.3  (50 episodes)
+Chunks: predict 20, execute 10
+
+=== Episode 1: 1000 steps, TIMEOUT ===
+  pipe  1 (t= 276): bird=0.766  gaps=(0.438, 0.772)  act=0.743
+  pipe  2 (t= 343): bird=0.490  gaps=(0.487, 0.487)  act=0.480
+  pipe  3 (t= 409): bird=0.651  gaps=(0.319, 0.654)  act=0.648
+  pipe  4 (t= 476): bird=0.609  gaps=(0.607, 0.607)  act=0.612
+  pipe  5 (t= 543): bird=0.773  gaps=(0.440, 0.775)  act=0.765
+  pipe  6 (t= 609): bird=0.637  gaps=(0.634, 0.634)  act=0.636
+  pipe  7 (t= 676): bird=0.797  gaps=(0.467, 0.801)  act=0.802
+  pipe  8 (t= 743): bird=0.306  gaps=(0.299, 0.299)  act=0.296
+  pipe  9 (t= 809): bird=0.466  gaps=(0.132, 0.467)  act=0.493
+  pipe 10 (t= 876): bird=0.672  gaps=(0.672, 0.672)  act=0.677
+  pipe 11 (t= 943): bird=0.838  gaps=(0.504, 0.839)  act=0.839
+
+=== Episode 2: 1000 steps, TIMEOUT ===
+  pipe  1 (t= 276): bird=0.840  gaps=(0.511, 0.846)  act=0.822
+  pipe  2 (t= 343): bird=0.614  gaps=(0.609, 0.609)  act=0.617
+  pipe  3 (t= 409): bird=0.774  gaps=(0.442, 0.777)  act=0.781
+  pipe  4 (t= 476): bird=0.559  gaps=(0.556, 0.556)  act=0.559
+  pipe  5 (t= 543): bird=0.718  gaps=(0.388, 0.723)  act=0.706
+  pipe  6 (t= 609): bird=0.599  gaps=(0.596, 0.596)  act=0.602
+  pipe  7 (t= 676): bird=0.762  gaps=(0.429, 0.763)  act=0.762
+  pipe  8 (t= 743): bird=0.704  gaps=(0.699, 0.699)  act=0.706
+  pipe  9 (t= 809): bird=0.869  gaps=(0.531, 0.866)  act=0.873
+  pipe 10 (t= 876): bird=0.555  gaps=(0.549, 0.549)  act=0.554
+  pipe 11 (t= 943): bird=0.714  gaps=(0.382, 0.717)  act=0.716
+
+=== Episode 3: 1000 steps, TIMEOUT ===
+  pipe  1 (t= 276): bird=0.204  gaps=(0.196, 0.531)  act=0.270
+  pipe  2 (t= 343): bird=0.504  gaps=(0.507, 0.507)  act=0.504
+  pipe  3 (t= 409): bird=0.670  gaps=(0.339, 0.674)  act=0.666
+  pipe  4 (t= 476): bird=0.361  gaps=(0.357, 0.357)  act=0.356
+  pipe  5 (t= 543): bird=0.518  gaps=(0.190, 0.525)  act=0.523
+  pipe  6 (t= 609): bird=0.591  gaps=(0.589, 0.589)  act=0.594
+  pipe  7 (t= 676): bird=0.428  gaps=(0.422, 0.757)  act=0.425
+  pipe  8 (t= 743): bird=0.619  gaps=(0.618, 0.618)  act=0.620
+  pipe  9 (t= 809): bird=0.783  gaps=(0.451, 0.786)  act=0.775
+  pipe 10 (t= 876): bird=0.356  gaps=(0.350, 0.350)  act=0.360
+  pipe 11 (t= 943): bird=0.513  gaps=(0.183, 0.518)  act=0.517
+
+=== Episode 4: 1000 steps, TIMEOUT ===
+  pipe  1 (t= 276): bird=0.541  gaps=(0.212, 0.547)  act=0.550
+  pipe  2 (t= 343): bird=0.507  gaps=(0.504, 0.504)  act=0.513
+  pipe  3 (t= 409): bird=0.669  gaps=(0.337, 0.672)  act=0.673
+  pipe  4 (t= 476): bird=0.607  gaps=(0.603, 0.603)  act=0.604
+  pipe  5 (t= 543): bird=0.769  gaps=(0.435, 0.770)  act=0.746
+  pipe  6 (t= 609): bird=0.362  gaps=(0.357, 0.357)  act=0.363
+  pipe  7 (t= 676): bird=0.520  gaps=(0.190, 0.525)  act=0.531
+  pipe  8 (t= 743): bird=0.387  gaps=(0.382, 0.382)  act=0.386
+  pipe  9 (t= 809): bird=0.543  gaps=(0.214, 0.549)  act=0.555
+  pipe 10 (t= 876): bird=0.556  gaps=(0.554, 0.554)  act=0.556
+  pipe 11 (t= 943): bird=0.720  gaps=(0.386, 0.721)  act=0.686
+
+=== Episode 5: 1000 steps, TIMEOUT ===
+  pipe  1 (t= 276): bird=0.507  gaps=(0.179, 0.513)  act=0.520
+  pipe  2 (t= 343): bird=0.584  gaps=(0.583, 0.583)  act=0.581
+  pipe  3 (t= 409): bird=0.745  gaps=(0.415, 0.750)  act=0.713
+  pipe  4 (t= 476): bird=0.695  gaps=(0.692, 0.692)  act=0.697
+  pipe  5 (t= 543): bird=0.861  gaps=(0.525, 0.859)  act=0.843
+  pipe  6 (t= 609): bird=0.439  gaps=(0.433, 0.433)  act=0.430
+  pipe  7 (t= 676): bird=0.597  gaps=(0.266, 0.600)  act=0.605
+  pipe  8 (t= 743): bird=0.394  gaps=(0.391, 0.391)  act=0.387
+  pipe  9 (t= 809): bird=0.553  gaps=(0.223, 0.558)  act=0.556
+  pipe 10 (t= 876): bird=0.677  gaps=(0.676, 0.676)  act=0.681
+  pipe 11 (t= 943): bird=0.842  gaps=(0.509, 0.844)  act=0.828
