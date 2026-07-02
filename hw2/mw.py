@@ -1,57 +1,79 @@
-from collections import deque, OrderedDict
+"""Meta-World env wrappers, updated for the Farama Meta-World 3.x stack.
+
+Requires:  metaworld>=3.1  gymnasium>=1.1  mujoco>=3.3   (mujoco_py is gone)
+
+What changed vs. the old (metaworld v2 / gym / mujoco_py) version:
+  * `import gym`            -> `import gymnasium as gym`
+  * `import mujoco_py`      -> removed; metaworld now uses the official `mujoco` bindings
+  * `metaworld.envs.mujoco.env_dict.ALL_V2_ENVIRONMENTS`
+                           -> `metaworld.env_dict.ALL_V3_ENVIRONMENTS`  ("*-v2" -> "*-v3")
+  * env.step() returns a 5-tuple `(obs, reward, terminated, truncated, info)`
+  * env.reset() returns `(obs, info)`
+  * render mode / camera / size are set at construction; `render()` takes no args
+"""
+
 from typing import Any, NamedTuple
 
-import gym
 import dm_env
-import mujoco_py
+import gymnasium as gym
 import numpy as np
 from dm_env import StepType, specs
-
 
 
 class MetaWorldEnv:
   """Wrap a Meta-World task with fixed reset, sparse rewards, and action repeat."""
 
-  def __init__(self, name="hammer-v2", action_repeat=2, duration = 50):
-      """Create the underlying Meta-World environment and configure rollout limits."""
-      from metaworld.envs.mujoco.env_dict import ALL_V2_ENVIRONMENTS
-      render_params={"elevation": -22.5,
-                     "azimuth": 15,
-                     "distance": 0.75,
-                     "lookat": np.array([-0.15, 0.60, 0.25])}
-      
-      self._env = ALL_V2_ENVIRONMENTS[name]()
+  def __init__(self, name="hammer-v3", action_repeat=2, duration=50,
+               render_mode='rgb_array', camera_name='behindGripper', width=84, height=84):
+      """Create the underlying Meta-World env and configure rollout limits.
+
+      render_mode: None (default, no frames), "rgb_array", "depth_array", or "human".
+      camera_name: e.g. "corner", "corner2", "topview", "behindGripper", "gripperPOV"
+                   (only relevant when render_mode is set). None uses the model default.
+      """
+      from metaworld.env_dict import ALL_V3_ENVIRONMENTS
+
+      self._env = ALL_V3_ENVIRONMENTS[name](
+          render_mode=render_mode,
+          camera_name=camera_name,
+          width=width,
+          height=height,
+      )
+      # Let the wrapper own episode termination; disable the built-in 500-step truncate.
       self._env.max_path_length = np.inf
+      # Fresh random object placement each reset (v3 keeps rand_vec frozen by default).
       self._env._freeze_rand_vec = False
+      # Full observability: include the goal in the observation.
       self._env._partially_observable = False
+      # Bypass the set_task() requirement guarded by @assert_task_is_set.
       self._env._set_task_called = True
 
-      self.hand_init_pose = self._env.hand_init_pos.copy()
-      self.hand_init_pose = np.array([0.1 , 0.5, 0.30])
-      
+      self.hand_init_pose = np.array([0.1, 0.5, 0.30])
+
       self.action_repeat = action_repeat
       self.duration = duration
       self._step = None
 
-      
   def __getattr__(self, attr):
      """Forward unknown attributes to the wrapped Meta-World environment."""
      if attr == '_wrapped_env':
        raise AttributeError()
      return getattr(self._env, attr)
- 
+
   @property
   def observation_space(self):
-        """Expose the wrapped Gym observation space."""
+        """Expose the wrapped Gymnasium observation space."""
         return self._env.observation_space
- 
+
   def step(self, action):
     """Repeat one action, collapse the reward to success, and enforce max duration."""
     reward = 0.0
+    done = False
     for _ in range(self.action_repeat):
-        state, rew, done, info = self._env.step(action)
+        state, rew, terminated, truncated, info = self._env.step(action)
         state = state.astype(self._env.observation_space.dtype)
         reward += rew
+        done = bool(terminated or truncated)
         if done:
             break
     reward = 1.0 * info['success']
@@ -62,18 +84,21 @@ class MetaWorldEnv:
 
   def reset(self):
     """Randomize the hand start pose and return the warmed-up initial observation."""
-    self._env.hand_init_pos = self.hand_init_pose + 0.03 * np.random.normal(size = 3)
-    _ = self._env.reset()
-    for i in range(10):
-        state,_,_,_ = self._env.step(np.zeros(self.action_space.shape))
+    self._env.hand_init_pos = self.hand_init_pose + 0.03 * np.random.normal(size=3)
+    self._env.reset()  # gymnasium reset returns (obs, info); we re-observe after warmup
+    zero_action = np.zeros(self.action_space.shape, dtype=self.action_space.dtype)
+    for _ in range(10):
+        state, _, _, _, _ = self._env.step(zero_action)
         state = state.astype(self._env.observation_space.dtype)
     self._step = 0
     return state
-  
-  def render(self, mode ='rgb_array', width = 84, height = 84):
-      """Stub render method kept for interface compatibility."""
-      return
-      
+
+  def render(self):
+      """Return a frame using the mode/camera/size fixed at construction time.
+
+      Returns an (H, W, 3) uint8 array when render_mode="rgb_array", else None.
+      """
+      return self._env.render()
 
 
 class GymWrapper:
@@ -99,8 +124,8 @@ class GymWrapper:
               shape = self._env.observation_space.shape,
               dtype = self._env.observation_space.dtype,
               name = 'observation')
-  
-    
+
+
   def action_spec(self):
       """Describe actions with a dm_env bounded array spec."""
       return dm_env.specs.BoundedArray(
@@ -126,7 +151,7 @@ class GymWrapper:
         step_type = StepType.FIRST,
         reward = 0.0,
         discount = 1.0,
-        observation = obs)  
+        observation = obs)
 
 
 class ExtendedTimeStep(NamedTuple):
@@ -229,8 +254,8 @@ class ExtendedTimeStepWrapper(dm_env.Environment):
         return getattr(self._env, name)
 
 
-def make():
-    env = MetaWorldEnv()
+def make(name="hammer-v3", action_repeat=2, duration=50):
+    env = MetaWorldEnv(name=name, action_repeat=action_repeat, duration=duration)
     env = GymWrapper(env)
     env = ActionDTypeWrapper(env, np.float32)
     env = ExtendedTimeStepWrapper(env)
