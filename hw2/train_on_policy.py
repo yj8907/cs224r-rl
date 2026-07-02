@@ -3,7 +3,16 @@ warnings.filterwarnings('ignore', category=DeprecationWarning)
 
 import os
 os.environ['MKL_SERVICE_FORCE_INTEL'] = '1'
-os.environ['MUJOCO_GL'] = 'egl'
+
+import platform
+system = platform.system()
+
+if system == "Darwin":      # macOS
+    os.environ["MUJOCO_GL"] = "glfw"
+elif system == "Linux":
+    os.environ["MUJOCO_GL"] = "egl"
+# Windows: leave unset or handle separately
+
 os.environ["WANDB_DISABLE_CODE"] = "1"
 
 from pathlib import Path
@@ -127,7 +136,7 @@ class Workspace:
         self._demo_iter = None
 
         from distutils.dir_util import copy_tree
-        copy_tree("/root/demos/",
+        copy_tree(str(self.work_dir / '..' / 'demos'),
                   str(self.work_dir / 'demos'))
 
         # On policy rollout buffer
@@ -285,6 +294,7 @@ class Workspace:
 
 @hydra.main(config_path='cfgs', config_name='on_policy_config')
 def main(cfg):
+
     from train_on_policy import Workspace as W
     root_dir = Path.cwd()
     workspace = W(cfg)

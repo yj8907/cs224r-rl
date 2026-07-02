@@ -129,14 +129,21 @@ class PPOAgent:
         advantages = torch.zeros_like(rewards)
         gae = torch.zeros(1, device=self.device)
 
+        # for t in reversed(range(T)):
+        ### YOUR CODE HERE ###
+        TD = rewards + self.gamma * (1-dones) * next_values - values
+        advantages = TD + self.gamma * self.gae_lambda * (1-dones)
+    
         for t in reversed(range(T)):
+            if dones[t] == 1:
+                gae = torch.zeros(1, device=self.device)
+            advantages[t] = TD[t] + self.gamma * self.gae_lambda * (1 - dones[t]) * gae
+            gae = advantages[t]
 
-            ### YOUR CODE HERE ###
-
-
-            ### YOUR CODE HERE ###
+        ### YOUR CODE HERE ###
 
         returns = advantages + values
+        
         return advantages, returns
 
     def update(self, rollout_buffer):
@@ -191,12 +198,15 @@ class PPOAgent:
         # Compute GAE advantages
         with torch.no_grad():
 
+            val_all = torch.squeeze(self.critic(torch.cat([obs_all, next_obs_all[-1:, :]], dim=0)), dim=1)
 
+            next_val_all = val_all[1:]
+            val_all = val_all[:-1]
             ### YOUR CODE HERE ###
-            
+            advantages_all, returns_all = self.compute_gae(rewards=rew_all, 
+                    values=val_all, next_values=next_val_all, discounts=disc_all, dones=done_all)
                         
             ### YOUR CODE HERE ###
-
 
             adv_std = advantages_all.std(unbiased=False)
 
@@ -238,10 +248,9 @@ class PPOAgent:
                 # Clipped surrogate (PPO-Clip objective) 
 
                 ### YOUR CODE HERE ###
-
-                
-                
-                
+                ratio = torch.exp(new_log_prob - olp_ep)
+                clipped_ratio = torch.clamp(ratio, 1-self.clip_eps, 1+self.clip_eps)
+                policy_loss = -torch.mean(torch.minimum(ratio*adv_ep, clipped_ratio*adv_ep))
 
                 ### YOUR CODE HERE ###
 

@@ -3,7 +3,15 @@ warnings.filterwarnings('ignore', category=DeprecationWarning)
 
 import os
 os.environ['MKL_SERVICE_FORCE_INTEL'] = '1'
-os.environ['MUJOCO_GL'] = 'egl'
+
+import platform
+system = platform.system()
+
+if system == "Darwin":      # macOS
+    os.environ["MUJOCO_GL"] = "cgl"
+elif system == "Linux":
+    os.environ["MUJOCO_GL"] = "egl"
+# Windows: leave unset or handle separately
 
 from pathlib import Path
 
