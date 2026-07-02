@@ -1,2 +1,10 @@
 hw2/hw2/
 hw1/.cs224r/
+hw2/wandb
+hw2/__pycache__
+hw2/Logdir
+hw2/on_policy_run
+Logdir/
+launch.json
+settings.json
+.DS_store
